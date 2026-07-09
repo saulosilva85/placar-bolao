@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Placar Bolão — Bolões em tempo real</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0B1220;
+    --bg-2: #0F1A2E;
+    --panel: #121E36;
+    --line: #223252;
+    --field: #1F7A4D;
+    --field-2: #2E9E63;
+    --amber: #F5B841;
+    --racing: #E63946;
+    --ink: #F2F1EA;
+    --ink-dim: #A9B4CC;
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif;
+    line-height:1.5;
+  }
+  h1,h2,h3, .display{
+    font-family:'Bebas Neue', 'Inter', sans-serif;
+    letter-spacing:0.5px;
+    font-weight:400;
+    line-height:1.05;
+  }
+  .mono{ font-family:'Space Mono', monospace; }
+  a{color:inherit;}
+  img{max-width:100%;}
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 24px; }
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+  :focus-visible{ outline:2px solid var(--amber); outline-offset:2px; }
+
+  /* NAV */
+  header.site{
+    position:sticky; top:0; z-index:50;
+    background:rgba(11,18,32,0.9);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{ display:flex; align-items:center; justify-content:space-between; padding:14px 24px; }
+  .brand{ display:flex; align-items:center; gap:10px; font-size:22px; }
+  .brand .dot{ width:10px;height:10px;border-radius:50%; background:var(--field-2); box-shadow:0 0 10px var(--field-2); animation:pulse 1.6s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
+  nav.links{ display:flex; gap:26px; font-size:14.5px; font-weight:600; }
+  nav.links a{ text-decoration:none; color:var(--ink-dim); transition:color .15s; }
+  nav.links a:hover{ color:var(--ink); }
+  .nav-actions{ display:flex; gap:10px; align-items:center; }
+  .btn{
+    border:none; cursor:pointer; font-weight:700; font-size:14px;
+    padding:10px 18px; border-radius:8px; transition:transform .12s ease, filter .12s ease;
+    font-family:'Inter',sans-serif;
+  }
+  .btn:hover{ transform:translateY(-1px); }
+  .btn-primary{ background:var(--field-2); color:#04150C; }
+  .btn-primary:hover{ filter:brightness(1.08); }
+  .btn-ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
+  .btn-ghost:hover{ border-color:var(--ink-dim); }
+  .burger{ display:none; background:none; border:none; color:var(--ink); font-size:26px; cursor:pointer; }
+
+  @media (max-width:860px){
+    nav.links{ display:none; }
+    .burger{ display:block; }
+  }
+
+  /* HERO */
+  .hero{
+    position:relative; overflow:hidden;
+    padding:70px 0 60px;
+    background:
+      radial-gradient(1100px 500px at 80% -10%, rgba(46,158,99,.20), transparent 60%),
+      radial-gradient(700px 400px at 5% 10%, rgba(230,57,70,.12), transparent 60%);
+  }
+  .hero-grid{ display:grid; grid-template-columns:1.1fr .9fr; gap:56px; align-items:center; }
+  @media (max-width:900px){ .hero-grid{ grid-template-columns:1fr; } }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    color:var(--amber); font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:1.5px;
+    margin-bottom:18px;
+  }
+  .hero h1{ font-size:clamp(42px, 6vw, 74px); margin:0 0 18px; }
+  .hero h1 span{ color:var(--field-2); }
+  .hero p.lead{ font-size:18px; color:var(--ink-dim); max-width:520px; margin-bottom:30px; }
+  .hero-ctas{ display:flex; gap:14px; flex-wrap:wrap; }
+  .btn-lg{ padding:15px 26px; font-size:15.5px; border-radius:10px; }
+
+  /* SCOREBOARD (signature element) */
+  .scoreboard{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:22px; box-shadow:0 20px 60px rgba(0,0,0,.35);
+  }
+  .scoreboard-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding-bottom:14px; border-bottom:1px dashed var(--line); }
+  .scoreboard-head .live{ display:flex; align-items:center; gap:8px; color:var(--racing); font-weight:700; font-size:12.5px; letter-spacing:1px; text-transform:uppercase;}
+  .live-dot{ width:8px;height:8px;border-radius:50%; background:var(--racing); animation:pulse 1s infinite; }
+  .sb-row{ display:grid; grid-template-columns:28px 1fr auto; gap:10px; align-items:center; padding:9px 4px; border-radius:8px; }
+  .sb-row:nth-child(odd){ background:rgba(255,255,255,0.02); }
+  .sb-pos{ color:var(--ink-dim); font-size:13px; }
+  .sb-name{ font-size:14.5px; font-weight:600; }
+  .sb-pts{ font-family:'Space Mono',monospace; font-weight:700; color:var(--field-2); font-size:15px; min-width:56px; text-align:right; }
+  .sb-foot{ margin-top:14px; font-size:12.5px; color:var(--ink-dim); }
+
+  /* SECTIONS common */
+  section{ padding:88px 0; }
+  .section-head{ max-width:640px; margin-bottom:48px; }
+  .section-head .eyebrow{ margin-bottom:12px; }
+  .section-head h2{ font-size:clamp(32px,4vw,48px); margin:0 0 14px; }
+  .section-head p{ color:var(--ink-dim); font-size:16px; }
+
+  /* CHAMPIONSHIPS */
+  .champ-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  @media (max-width:900px){ .champ-grid{ grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:600px){ .champ-grid{ grid-template-columns:1fr;} }
+  .champ-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:24px;
+    display:flex; flex-direction:column; gap:12px; transition:border-color .15s, transform .15s;
+  }
+  .champ-card:hover{ border-color:var(--field-2); transform:translateY(-3px); }
+  .champ-tag{ font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:700; color:var(--amber); }
+  .champ-card h3{ font-size:26px; margin:0; }
+  .champ-card p{ color:var(--ink-dim); font-size:14px; margin:0; flex-grow:1; }
+  .champ-meta{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-dim); border-top:1px solid var(--line); padding-top:12px; }
+  .champ-meta b{ color:var(--ink); }
+  .f1-card{ border-color:rgba(230,57,70,0.4); }
+  .f1-card .champ-tag{ color:var(--racing); }
+
+  /* HOW IT WORKS */
+  .steps{ display:grid; grid-template-columns:repeat(4,1fr); gap:22px; counter-reset:step; }
+  @media (max-width:900px){ .steps{ grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:560px){ .steps{ grid-template-columns:1fr;} }
+  .step{ position:relative; padding-top:8px; }
+  .step .num{ font-family:'Space Mono',monospace; font-size:13px; color:var(--field-2); font-weight:700; }
+  .step h3{ font-size:22px; margin:10px 0 8px; }
+  .step p{ color:var(--ink-dim); font-size:14.5px; margin:0; }
+  .step-line{ height:2px; background:linear-gradient(90deg,var(--field-2),transparent); margin:14px 0 0; width:40px; }
+
+  /* PLANS */
+  .plans{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; align-items:stretch; }
+  @media (max-width:900px){ .plans{ grid-template-columns:1fr; } }
+  .plan{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:30px 26px;
+    display:flex; flex-direction:column;
+  }
+  .plan.featured{ border-color:var(--amber); position:relative; box-shadow:0 0 0 1px var(--amber) inset; }
+  .plan.featured::before{
+    content:"MAIS ESCOLHIDO"; position:absolute; top:-12px; left:26px; background:var(--amber); color:#231400;
+    font-size:11px; font-weight:800; padding:4px 10px; border-radius:20px; letter-spacing:.5px;
+  }
+  .plan-name{ font-size:15px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--ink-dim); }
+  .plan.featured .plan-name{ color:var(--amber); }
+  .plan-price{ display:flex; align-items:baseline; gap:6px; margin:14px 0 4px; }
+  .plan-price .val{ font-family:'Bebas Neue'; font-size:52px; }
+  .plan-price .cents{ font-family:'Space Mono'; font-size:18px; color:var(--ink-dim); }
+  .plan-price .per{ color:var(--ink-dim); font-size:13.5px; }
+  .plan-desc{ color:var(--ink-dim); font-size:14px; margin-bottom:20px; }
+  .plan-features{ list-style:none; margin:0 0 26px; padding:0; display:flex; flex-direction:column; gap:11px; flex-grow:1; }
+  .plan-features li{ font-size:14px; display:flex; gap:10px; align-items:flex-start; }
+  .plan-features li::before{ content:"✓"; color:var(--field-2); font-weight:700; }
+  .plan.featured .plan-features li::before{ color:var(--amber); }
+  .plan .btn{ width:100%; }
+
+  /* CONTACT */
+  .contact-grid{ display:grid; grid-template-columns:1fr 1fr; gap:56px; }
+  @media (max-width:860px){ .contact-grid{ grid-template-columns:1fr; } }
+  .field{ margin-bottom:16px; }
+  .field label{ display:block; font-size:13px; font-weight:600; color:var(--ink-dim); margin-bottom:6px; }
+  .field input, .field textarea, .field select{
+    width:100%; padding:12px 14px; background:var(--bg-2); border:1px solid var(--line); border-radius:8px;
+    color:var(--ink); font-family:'Inter'; font-size:14.5px;
+  }
+  .field textarea{ resize:vertical; min-height:110px; }
+  .contact-info{ display:flex; flex-direction:column; gap:20px; }
+  .contact-info .item{ display:flex; gap:14px; }
+  .contact-info .ico{ width:38px;height:38px;border-radius:10px; background:var(--field); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:17px; }
+  .form-msg{ font-size:13.5px; margin-top:10px; color:var(--field-2); display:none; }
+
+  /* PRIVACY / TERMS accordion */
+  .accordion-item{ border-bottom:1px solid var(--line); }
+  .accordion-item button.acc-trigger{
+    width:100%; text-align:left; background:none; border:none; color:var(--ink);
+    padding:20px 0; font-size:17px; font-weight:700; font-family:'Inter'; cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .acc-trigger .chev{ transition:transform .2s; color:var(--field-2); }
+  .accordion-item.open .chev{ transform:rotate(45deg); }
+  .acc-panel{ max-height:0; overflow:hidden; transition:max-height .25s ease; }
+  .acc-panel-inner{ padding:0 0 20px; color:var(--ink-dim); font-size:14.5px; }
+  .acc-panel-inner p{ margin:0 0 10px; }
+
+  footer{ border-top:1px solid var(--line); padding:50px 0 30px; background:var(--bg-2); }
+  .footer-grid{ display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:30px; margin-bottom:30px; }
+  @media (max-width:760px){ .footer-grid{ grid-template-columns:1fr 1fr; } }
+  .footer-grid h4{ font-size:13px; text-transform:uppercase; letter-spacing:1px; color:var(--ink-dim); margin:0 0 14px; }
+  .footer-grid ul{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px; }
+  .footer-grid a{ text-decoration:none; color:var(--ink-dim); font-size:14px; }
+  .footer-grid a:hover{ color:var(--ink); }
+  .footer-bottom{ border-top:1px solid var(--line); padding-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; color:var(--ink-dim); font-size:12.5px; }
+  .disclaimer{ font-size:12px; color:var(--ink-dim); max-width:760px; margin-top:14px; line-height:1.6; }
+
+  /* MODAL */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(6,10,20,0.72); backdrop-filter:blur(4px);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
+  }
+  .modal-overlay.active{ display:flex; }
+  .modal{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:34px;
+    width:100%; max-width:430px; position:relative;
+  }
+  .modal-close{ position:absolute; top:16px; right:16px; background:none; border:none; color:var(--ink-dim); font-size:22px; cursor:pointer; }
+  .modal-tabs{ display:flex; gap:6px; background:var(--bg-2); border-radius:9px; padding:4px; margin-bottom:24px; }
+  .modal-tabs button{
+    flex:1; padding:9px; border:none; border-radius:7px; background:none; color:var(--ink-dim);
+    font-weight:700; font-size:13.5px; cursor:pointer; font-family:'Inter';
+  }
+  .modal-tabs button.active{ background:var(--field-2); color:#04150C; }
+  .modal-panel{ display:none; }
+  .modal-panel.active{ display:block; }
+  .modal h2{ font-size:26px; margin:0 0 4px; }
+  .modal .sub{ color:var(--ink-dim); font-size:13.5px; margin-bottom:20px; }
+  .modal .btn{ width:100%; margin-top:6px; }
+  .modal .fine{ font-size:12px; color:var(--ink-dim); margin-top:14px; text-align:center; }
+
+  /* Mobile menu */
+  .mobile-menu{
+    display:none; flex-direction:column; gap:4px; padding:10px 24px 20px; border-top:1px solid var(--line);
+  }
+  .mobile-menu.active{ display:flex; }
+  .mobile-menu a{ padding:12px 0; color:var(--ink-dim); text-decoration:none; font-weight:600; border-bottom:1px solid var(--line); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="nav wrap">
+    <div class="brand">
+      <span class="dot"></span>
+      <span class="display">PLACAR<span style="color:var(--field-2)">BOLÃO</span></span>
+    </div>
+    <nav class="links">
+      <a href="#campeonatos">Campeonatos</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#planos">Planos</a>
+      <a href="#privacidade">Privacidade</a>
+      <a href="#contato">Contato</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" onclick="openAuth('login')">Entrar</button>
+      <button class="btn btn-primary" onclick="openAuth('register')">Criar conta</button>
+      <button class="burger" onclick="toggleMobileMenu()" aria-label="Abrir menu">☰</button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#campeonatos" onclick="toggleMobileMenu()">Campeonatos</a>
+    <a href="#como-funciona" onclick="toggleMobileMenu()">Como funciona</a>
+    <a href="#planos" onclick="toggleMobileMenu()">Planos</a>
+    <a href="#privacidade" onclick="toggleMobileMenu()">Privacidade</a>
+    <a href="#contato" onclick="toggleMobileMenu()">Contato</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">● Bolões ao vivo · Futebol e Fórmula 1</div>
+      <h1>Palpite. <span>Acompanhe.</span><br>Dispute em tempo real.</h1>
+      <p class="lead">Monte bolões do Brasileirão, Champions League, Libertadores, Copa do Mundo e da Fórmula 1. Pontuação atualizada rodada a rodada, direto no seu grupo de amigos, família ou empresa.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-primary btn-lg" onclick="openAuth('register')">Criar meu bolão grátis</button>
+        <a href="#como-funciona" class="btn btn-ghost btn-lg" style="display:inline-flex;align-items:center;">Ver como funciona</a>
+      </div>
+    </div>
+
+    <div class="scoreboard" aria-label="Exemplo de classificação ao vivo">
+      <div class="scoreboard-head">
+        <div>
+          <div style="font-size:13px;color:var(--ink-dim);">Bolão · Brasileirão Série A</div>
+          <div style="font-weight:700;">Rodada 18 — classificação</div>
+        </div>
+        <div class="live"><span class="live-dot"></span> Ao vivo</div>
+      </div>
+      <div id="sbRows"></div>
+      <div class="sb-foot mono">Atualizado há <span id="sbSeconds">3</span>s · 42 participantes</div>
+    </div>
+  </div>
+</section>
+
+<!-- CAMPEONATOS -->
+<section id="campeonatos">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow" style="color:var(--field-2);">● Campeonatos</div>
+      <h2>Um bolão para cada paixão</h2>
+      <p>Escolha entre os principais campeonatos de futebol e a temporada completa de Fórmula 1. Cada bolão tem regras de pontuação próprias, ajustadas ao formato da competição.</p>
+    </div>
+    <div class="champ-grid">
+      <div class="champ-card">
+        <div class="champ-tag">Futebol · Nacional</div>
+        <h3>Brasileirão Série A</h3>
+        <p>Palpite no placar exato de cada rodada. Pontos extras para acertar o vencedor e o número de gols.</p>
+        <div class="champ-meta"><span>38 rodadas</span><b>12.480 palpiteiros</b></div>
+      </div>
+      <div class="champ-card">
+        <div class="champ-tag">Futebol · Continental</div>
+        <h3>Libertadores</h3>
+        <p>Da fase de grupos à final: palpite em jogos de ida e volta com bônus de mata-mata.</p>
+        <div class="champ-meta"><span>fase atual: oitavas</span><b>6.120 palpiteiros</b></div>
+      </div>
+      <div class="champ-card">
+        <div class="champ-tag">Futebol · Europeu</div>
+        <h3>Champions League</h3>
+        <p>Acompanhe os principais clubes da Europa com pontuação progressiva a cada fase eliminatória.</p>
+        <div class="champ-meta"><span>fase atual: oitavas</span><b>9.870 palpiteiros</b></div>
+      </div>
+      <div class="champ-card">
+        <div class="champ-tag">Futebol · Seleções</div>
+        <h3>Copa do Mundo</h3>
+        <p>O bolão mais tradicional do escritório, agora com grupos privados ilimitados e ranking por empresa.</p>
+        <div class="champ-meta"><span>fase de grupos</span><b>28.310 palpiteiros</b></div>
+      </div>
+      <div class="champ-card f1-card">
+        <div class="champ-tag">Fórmula 1</div>
+        <h3>Temporada F1</h3>
+        <p>Palpite no pódio de cada corrida: vencedor, 2º e 3º lugar, volta mais rápida e safety car.</p>
+        <div class="champ-meta"><span>próxima etapa: GP</span><b>4.905 palpiteiros</b></div>
+      </div>
+      <div class="champ-card">
+        <div class="champ-tag">Personalizado</div>
+        <h3>Crie seu próprio bolão</h3>
+        <p>Escolha qualquer competição disponível na plataforma e defina as regras de pontuação do seu grupo.</p>
+        <div class="champ-meta"><span>configuração livre</span><b>disponível nos planos Prata e Ouro</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section id="como-funciona" style="background:var(--bg-2);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow" style="color:var(--field-2);">● Como funciona</div>
+      <h2>Do cadastro ao pódio em 4 passos</h2>
+      <p>O processo é o mesmo para qualquer campeonato ou modalidade escolhida.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="num mono">01</div>
+        <h3>Crie sua conta</h3>
+        <p>Cadastro gratuito com e-mail em menos de um minuto. Sem cartão de crédito no plano Básico.</p>
+        <div class="step-line"></div>
+      </div>
+      <div class="step">
+        <div class="num mono">02</div>
+        <h3>Escolha o bolão</h3>
+        <p>Entre em um bolão público ou crie o seu, convidando amigos, família ou colegas de trabalho.</p>
+        <div class="step-line"></div>
+      </div>
+      <div class="step">
+        <div class="num mono">03</div>
+        <h3>Envie seus palpites</h3>
+        <p>Defina placares, pódios ou resultados antes do fechamento de cada rodada ou corrida.</p>
+        <div class="step-line"></div>
+      </div>
+      <div class="step">
+        <div class="num mono">04</div>
+        <h3>Acompanhe ao vivo</h3>
+        <p>A classificação é atualizada em tempo real conforme os resultados vão saindo.</p>
+        <div class="step-line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANOS -->
+<section id="planos">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow" style="color:var(--field-2);">● Planos</div>
+      <h2>Planos para todo tipo de bolão</h2>
+      <p>Comece de graça e evolua conforme seu grupo crescer. Cancele quando quiser, sem multa.</p>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price"><span class="val">R$ 0</span><span class="per">/sempre</span></div>
+        <div class="plan-desc">Ideal para experimentar ou disputar com um grupo pequeno de amigos.</div>
+        <ul class="plan-features">
+          <li>1 bolão ativo por vez</li>
+          <li>Até 15 participantes por bolão</li>
+          <li>Campeonatos públicos (Brasileirão e F1)</li>
+          <li>Classificação em tempo real</li>
+          <li>Suporte por e-mail</li>
+        </ul>
+        <button class="btn btn-ghost" onclick="openAuth('register')">Começar grátis</button>
+      </div>
+
+      <div class="plan featured">
+        <div class="plan-name">Prata</div>
+        <div class="plan-price"><span class="val">R$ 14</span><span class="cents">,90</span><span class="per">/mês</span></div>
+        <div class="plan-desc">Para quem organiza vários bolões ao mesmo tempo, com amigos ou colegas.</div>
+        <ul class="plan-features">
+          <li>Até 5 bolões ativos simultâneos</li>
+          <li>Até 100 participantes por bolão</li>
+          <li>Todos os campeonatos de futebol e F1</li>
+          <li>Regras de pontuação personalizadas</li>
+          <li>Ranking por grupo e por temporada</li>
+          <li>Suporte prioritário</li>
+        </ul>
+        <button class="btn btn-primary" onclick="openAuth('register')">Assinar Prata</button>
+      </div>
+
+      <div class="plan">
+        <div class="plan-name">Ouro</div>
+        <div class="plan-price"><span class="val">R$ 34</span><span class="cents">,90</span><span class="per">/mês</span></div>
+        <div class="plan-desc">Feito para empresas e comunidades grandes que precisam de mais controle.</div>
+        <ul class="plan-features">
+          <li>Bolões e participantes ilimitados</li>
+          <li>Marca própria (logo e cores do grupo)</li>
+          <li>Painel de administração avançado</li>
+          <li>Exportação de dados e relatórios</li>
+          <li>Múltiplos administradores por bolão</li>
+          <li>Suporte dedicado via WhatsApp</li>
+        </ul>
+        <button class="btn btn-ghost" onclick="openAuth('register')">Assinar Ouro</button>
+      </div>
+    </div>
+    <p class="disclaimer">Os bolões da PlacarBolão são jogos de prognósticos entre participantes de um mesmo grupo, sem intermediação de apostas em dinheiro pela plataforma: os valores cobrados referem-se exclusivamente ao uso das ferramentas (criação de bolões, regras personalizadas e recursos de administração), e eventuais prêmios são definidos e organizados livremente entre os participantes de cada grupo.</p>
+  </div>
+</section>
+
+<!-- PRIVACIDADE -->
+<section id="privacidade" style="background:var(--bg-2);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow" style="color:var(--field-2);">● Termos e privacidade</div>
+      <h2>Transparência em primeiro lugar</h2>
+      <p>Resumo dos principais pontos dos nossos Termos de Uso e Política de Privacidade.</p>
+    </div>
+    <div id="accordion">
+      <div class="accordion-item">
+        <button class="acc-trigger">Quais dados coletamos<span class="chev">+</span></button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Coletamos nome, e-mail e senha (criptografada) no cadastro, além dos palpites enviados em cada bolão. Dados de pagamento dos planos Prata e Ouro são processados por um parceiro de pagamentos externo e não ficam armazenados em nossos servidores.</p>
+          <p>Também registramos dados de uso, como acessos e interações, para melhorar a experiência e a segurança da plataforma.</p>
+        </div></div>
+      </div>
+      <div class="accordion-item">
+        <button class="acc-trigger">Como usamos seus dados<span class="chev">+</span></button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Usamos os dados para manter sua conta, calcular classificações em tempo real, enviar notificações sobre seus bolões e melhorar nossos serviços. Não vendemos dados pessoais a terceiros.</p>
+        </div></div>
+      </div>
+      <div class="accordion-item">
+        <button class="acc-trigger">Compartilhamento de informações<span class="chev">+</span></button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Seu nome de usuário e pontuação são visíveis para os demais participantes do mesmo bolão. Dados de pagamento são tratados por processadoras de pagamento parceiras, sujeitas às próprias políticas de privacidade.</p>
+        </div></div>
+      </div>
+      <div class="accordion-item">
+        <button class="acc-trigger">Seus direitos<span class="chev">+</span></button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Você pode solicitar a qualquer momento a correção, exportação ou exclusão dos seus dados pessoais, conforme a Lei Geral de Proteção de Dados (LGPD), entrando em contato pelo e-mail de suporte.</p>
+        </div></div>
+      </div>
+      <div class="accordion-item">
+        <button class="acc-trigger">Cookies<span class="chev">+</span></button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Utilizamos cookies essenciais para manter sua sessão ativa e cookies analíticos opcionais para entender o uso da plataforma. Você pode gerenciar suas preferências de cookies a qualquer momento.</p>
+        </div></div>
+      </div>
+      <div class="accordion-item">
+        <button class="acc-trigger">Cancelamento e reembolso<span class="chev">+</span></button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Assinaturas dos planos Prata e Ouro podem ser canceladas a qualquer momento, sem multa, com efeito ao final do ciclo de cobrança já pago.</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATO -->
+<section id="contato">
+  <div class="wrap contact-grid">
+    <div>
+      <div class="eyebrow" style="color:var(--field-2);">● Contato</div>
+      <h2 style="font-size:clamp(30px,4vw,42px);margin:0 0 16px;">Fale com a gente</h2>
+      <p style="color:var(--ink-dim);margin-bottom:30px;">Dúvidas sobre planos, campeonatos disponíveis ou problemas na sua conta: responderemos em até 1 dia útil.</p>
+      <div class="contact-info">
+        <div class="item"><div class="ico">✉️</div><div><b>E-mail</b><br><span style="color:var(--ink-dim);">suporte@placarbolao.com.br</span></div></div>
+        <div class="item"><div class="ico">💬</div><div><b>WhatsApp (planos Ouro)</b><br><span style="color:var(--ink-dim);">Atendimento dedicado incluso no plano</span></div></div>
+        <div class="item"><div class="ico">🕒</div><div><b>Horário de atendimento</b><br><span style="color:var(--ink-dim);">Seg. a sex., 9h às 18h</span></div></div>
+      </div>
+    </div>
+    <form onsubmit="handleContact(event)">
+      <div class="field"><label for="cName">Nome</label><input id="cName" required></div>
+      <div class="field"><label for="cEmail">E-mail</label><input id="cEmail" type="email" required></div>
+      <div class="field"><label for="cSubject">Assunto</label>
+        <select id="cSubject">
+          <option>Dúvida sobre planos</option>
+          <option>Problema na conta</option>
+          <option>Sugestão de campeonato</option>
+          <option>Outro assunto</option>
+        </select>
+      </div>
+      <div class="field"><label for="cMsg">Mensagem</label><textarea id="cMsg" required></textarea></div>
+      <button class="btn btn-primary" type="submit">Enviar mensagem</button>
+      <div class="form-msg" id="contactMsg">Mensagem enviada! Retornaremos em breve.</div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="brand" style="margin-bottom:12px;"><span class="dot"></span><span class="display" style="font-size:20px;">PLACAR<span style="color:var(--field-2)">BOLÃO</span></span></div>
+        <p style="color:var(--ink-dim);font-size:14px;max-width:280px;">Bolões de futebol e Fórmula 1 com classificação em tempo real, para grupos de qualquer tamanho.</p>
+      </div>
+      <div>
+        <h4>Plataforma</h4>
+        <ul>
+          <li><a href="#campeonatos">Campeonatos</a></li>
+          <li><a href="#planos">Planos</a></li>
+          <li><a href="#como-funciona">Como funciona</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Empresa</h4>
+        <ul>
+          <li><a href="#privacidade">Privacidade</a></li>
+          <li><a href="#contato">Contato</a></li>
+          <li><a href="#" onclick="openAuth('register');return false;">Criar conta</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Conta</h4>
+        <ul>
+          <li><a href="#" onclick="openAuth('login');return false;">Entrar</a></li>
+          <li><a href="#" onclick="openAuth('register');return false;">Cadastrar</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 PlacarBolão. Protótipo de demonstração.</span>
+      <span>Feito para torcedores de futebol e fãs de Fórmula 1.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL LOGIN/CADASTRO -->
+<div class="modal-overlay" id="authOverlay" onclick="closeAuthOnOverlay(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuth()" aria-label="Fechar">×</button>
+    <div class="modal-tabs">
+      <button id="tabLogin" class="active" onclick="switchAuthTab('login')">Entrar</button>
+      <button id="tabRegister" onclick="switchAuthTab('register')">Criar conta</button>
+    </div>
+
+    <div class="modal-panel active" id="panelLogin">
+      <h2>Bem-vindo de volta</h2>
+      <div class="sub">Entre para ver seus bolões e enviar seus palpites.</div>
+      <form onsubmit="handleAuth(event,'login')">
+        <div class="field"><label for="loginEmail">E-mail</label><input id="loginEmail" type="email" required></div>
+        <div class="field"><label for="loginPass">Senha</label><input id="loginPass" type="password" required></div>
+        <button class="btn btn-primary" type="submit">Entrar</button>
+      </form>
+      <div class="fine">Ainda não tem conta? <a href="#" onclick="switchAuthTab('register');return false;" style="color:var(--field-2);font-weight:700;">Cadastre-se grátis</a></div>
+    </div>
+
+    <div class="modal-panel" id="panelRegister">
+      <h2>Criar conta grátis</h2>
+      <div class="sub">Comece no plano Básico, sem cartão de crédito.</div>
+      <form onsubmit="handleAuth(event,'register')">
+        <div class="field"><label for="regName">Nome</label><input id="regName" required></div>
+        <div class="field"><label for="regEmail">E-mail</label><input id="regEmail" type="email" required></div>
+        <div class="field"><label for="regPass">Senha</label><input id="regPass" type="password" required minlength="6"></div>
+        <button class="btn btn-primary" type="submit">Criar minha conta</button>
+      </form>
+      <div class="fine">Ao criar uma conta, você concorda com os <a href="#privacidade" onclick="closeAuth()" style="color:var(--field-2);">Termos e Privacidade</a>.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Mobile menu
+  function toggleMobileMenu(){
+    document.getElementById('mobileMenu').classList.toggle('active');
+  }
+
+  // Accordion
+  document.querySelectorAll('.accordion-item').forEach(item=>{
+    const trigger = item.querySelector('.acc-trigger');
+    const panel = item.querySelector('.acc-panel');
+    trigger.addEventListener('click', ()=>{
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.accordion-item').forEach(i=>{
+        i.classList.remove('open');
+        i.querySelector('.acc-panel').style.maxHeight = null;
+      });
+      if(!isOpen){
+        item.classList.add('open');
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // Auth modal
+  function openAuth(tab){
+    document.getElementById('authOverlay').classList.add('active');
+    switchAuthTab(tab || 'login');
+  }
+  function closeAuth(){
+    document.getElementById('authOverlay').classList.remove('active');
+  }
+  function closeAuthOnOverlay(e){
+    if(e.target.id === 'authOverlay') closeAuth();
+  }
+  function switchAuthTab(tab){
+    document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+    document.getElementById('tabRegister').classList.toggle('active', tab==='register');
+    document.getElementById('panelLogin').classList.toggle('active', tab==='login');
+    document.getElementById('panelRegister').classList.toggle('active', tab==='register');
+  }
+  // In-memory only demo store (no backend / no browser storage)
+  const demoUsers = [];
+  function handleAuth(e, type){
+    e.preventDefault();
+    if(type === 'register'){
+      const name = document.getElementById('regName').value;
+      const email = document.getElementById('regEmail').value;
+      demoUsers.push({name, email});
+      alert('Conta criada com sucesso (demonstração). Bem-vindo(a), ' + name + '! Em produção, isso criaria sua conta real no plano Básico.');
+    } else {
+      const email = document.getElementById('loginEmail').value;
+      alert('Login simulado para ' + email + ' (demonstração). Em produção, isso autenticaria sua conta.');
+    }
+    closeAuth();
+  }
+
+  function handleContact(e){
+    e.preventDefault();
+    document.getElementById('contactMsg').style.display = 'block';
+    e.target.reset();
+  }
+
+  // Live scoreboard simulation
+  const players = [
+    {name:'Carla M.', pts:214},
+    {name:'Rafael T.', pts:208},
+    {name:'Grupo do Trabalho', pts:201},
+    {name:'Bruno A.', pts:196},
+    {name:'Fernanda L.', pts:189},
+  ];
+  function renderScoreboard(){
+    const sorted = [...players].sort((a,b)=>b.pts-a.pts);
+    const rows = sorted.map((p,i)=>`
+      <div class="sb-row">
+        <div class="sb-pos mono">${i+1}º</div>
+        <div class="sb-name">${p.name}</div>
+        <div class="sb-pts">${p.pts} pts</div>
+      </div>`).join('');
+    document.getElementById('sbRows').innerHTML = rows;
+  }
+  renderScoreboard();
+
+  let sec = 3;
+  setInterval(()=>{
+    sec++;
+    if(sec > 8){
+      sec = 0;
+      const idx = Math.floor(Math.random()*players.length);
+      players[idx].pts += Math.floor(Math.random()*3)+1;
+      renderScoreboard();
+    }
+    document.getElementById('sbSeconds').textContent = sec;
+  }, 1000);
+</script>
+
+</body>
+</html>
