@@ -232,12 +232,103 @@
   .modal .btn{ width:100%; margin-top:6px; }
   .modal .fine{ font-size:12px; color:var(--ink-dim); margin-top:14px; text-align:center; }
 
+  .pix-qr-box{
+    width:180px; height:180px; margin:0 auto 16px; background:#fff; border-radius:12px;
+    padding:12px; display:flex; align-items:center; justify-content:center;
+  }
+  .pix-key-row{ display:flex; gap:8px; }
+  .pix-key-row input{ flex-grow:1; font-family:'Space Mono',monospace; font-size:11.5px; }
+  .pix-key-row button{ flex-shrink:0; white-space:nowrap; }
+
+  /* PAINEL DO BOLÃO */
+  #bolaoDashboard{ background:var(--bg); min-height:100vh; }
+  .db-tab{
+    background:var(--panel); border:1px solid var(--line); color:var(--ink-dim); font-weight:700;
+    font-size:13.5px; padding:9px 16px; border-radius:8px 8px 0 0; cursor:pointer; font-family:'Inter';
+    border-bottom:none; position:relative; top:1px;
+  }
+  .db-tab.active{ background:var(--bg); color:var(--field-2); border-bottom:1px solid var(--bg); }
+  .db-panel{ display:none; }
+  .db-panel.active{ display:block; }
+  .db-card-head{
+    display:flex; align-items:center; gap:8px; font-weight:700; font-size:15px; color:var(--ink);
+    background:var(--panel); border:1px solid var(--line); padding:12px 16px; border-radius:10px 10px 0 0;
+  }
+  .db-table{ border:1px solid var(--line); border-top:none; border-radius:0 0 10px 10px; overflow:hidden; }
+  .db-row{
+    display:grid; grid-template-columns:36px 1fr 70px; gap:10px; align-items:center;
+    padding:11px 16px; border-top:1px solid var(--line); font-size:14px;
+  }
+  .db-row.head{ background:var(--bg-2); color:var(--ink-dim); font-size:12px; text-transform:uppercase; letter-spacing:.5px; font-weight:700; border-top:none; }
+  .db-row.me{ background:rgba(46,158,99,0.08); }
+  .db-row .pos{ color:var(--ink-dim); font-family:'Space Mono',monospace; }
+  .db-row .pts{ font-family:'Space Mono',monospace; font-weight:700; color:var(--field-2); text-align:right; }
+  .db-fixture{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    border:1px solid var(--line); border-top:none; padding:12px 16px; font-size:13.5px;
+  }
+  #dbHomeFixtures .db-fixture:first-child{ border-top:1px solid var(--line); }
+  #dbHomeFixtures{ border-radius:0 0 10px 10px; overflow:hidden; }
+  .db-fixture .teams{ font-weight:600; }
+  .db-fixture .when{ color:var(--ink-dim); font-size:12px; white-space:nowrap; }
+  .aposta-row{
+    display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap;
+    border:1px solid var(--line); border-radius:10px; padding:14px 18px; margin-bottom:12px; background:var(--panel);
+  }
+  .aposta-row .teams{ font-weight:700; font-size:15px; }
+  .aposta-row .when{ color:var(--ink-dim); font-size:12.5px; }
+  .aposta-score{ display:flex; align-items:center; gap:8px; }
+  .aposta-score input{
+    width:52px; text-align:center; padding:8px 4px; background:var(--bg-2); border:1px solid var(--line);
+    border-radius:8px; color:var(--ink); font-family:'Space Mono',monospace; font-size:16px;
+  }
+  .db-detail-item{ display:flex; justify-content:space-between; padding:13px 16px; border-top:1px solid var(--line); font-size:14px; }
+  .db-detail-item:first-child{ border-top:none; }
+  .db-detail-item .k{ color:var(--ink-dim); }
+  .db-detail-item .v{ font-weight:600; }
+  @media (max-width:820px){ .db-grid{ grid-template-columns:1fr !important; } }
+
   /* Mobile menu */
   .mobile-menu{
     display:none; flex-direction:column; gap:4px; padding:10px 24px 20px; border-top:1px solid var(--line);
   }
   .mobile-menu.active{ display:flex; }
   .mobile-menu a{ padding:12px 0; color:var(--ink-dim); text-decoration:none; font-weight:600; border-bottom:1px solid var(--line); }
+
+  /* Demo mode banner */
+  .demo-banner{
+    background:var(--amber); color:#231400; text-align:center; font-size:13px; font-weight:700;
+    padding:8px 16px;
+  }
+  .demo-banner a{ text-decoration:underline; color:#231400; }
+
+  /* Account state */
+  .guest-box{ display:flex; align-items:center; gap:10px; }
+  .guest-box.hide{ display:none; }
+  .account-box{ position:relative; display:none; align-items:center; gap:10px; }
+  .account-box.active{ display:flex; }
+  .account-pill{
+    display:flex; align-items:center; gap:8px; background:var(--bg-2); border:1px solid var(--line);
+    padding:7px 14px 7px 8px; border-radius:30px; cursor:pointer; font-size:13.5px; font-weight:700;
+  }
+  .account-avatar{
+    width:26px;height:26px;border-radius:50%; background:var(--field-2); color:#04150C;
+    display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800;
+  }
+  .account-dropdown{
+    position:absolute; top:calc(100% + 10px); right:0; background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; min-width:210px; padding:8px; display:none; box-shadow:0 12px 30px rgba(0,0,0,.4); z-index:60;
+  }
+  .account-dropdown.open{ display:block; }
+  .account-dropdown .info{ padding:8px 10px 12px; border-bottom:1px solid var(--line); margin-bottom:6px; }
+  .account-dropdown .info .name{ font-weight:700; font-size:14px; }
+  .account-dropdown .info .email{ font-size:12px; color:var(--ink-dim); }
+  .account-dropdown button{
+    width:100%; text-align:left; background:none; border:none; color:var(--ink); padding:9px 10px;
+    border-radius:7px; font-size:13.5px; cursor:pointer; font-family:'Inter'; font-weight:600;
+  }
+  .account-dropdown button:hover{ background:var(--bg-2); }
+  .account-dropdown button.danger{ color:var(--racing); }
 
   @media (prefers-reduced-motion: reduce){
     *{ animation:none !important; transition:none !important; }
@@ -246,6 +337,7 @@
 </head>
 <body>
 
+<div class="demo-banner">⚠ Protótipo de demonstração: cadastro/login funcionam apenas nesta sessão (sem banco de dados) e nenhum e-mail real é enviado.</div>
 <header class="site">
   <div class="nav wrap">
     <div class="brand">
@@ -260,8 +352,25 @@
       <a href="#contato">Contato</a>
     </nav>
     <div class="nav-actions">
-      <button class="btn btn-ghost" onclick="openAuth('login')">Entrar</button>
-      <button class="btn btn-primary" onclick="openAuth('register')">Criar conta</button>
+      <div class="guest-box" id="guestBox">
+        <button class="btn btn-ghost" onclick="openAuth('login')">Entrar</button>
+        <button class="btn btn-primary" onclick="openAuth('register')">Criar conta</button>
+      </div>
+      <div class="account-box" id="accountBox">
+        <button class="account-pill" id="accountPill" onclick="toggleAccountDropdown()">
+          <span class="account-avatar" id="accountAvatar">?</span>
+          <span id="accountLabel">Minha Conta</span>
+        </button>
+        <div class="account-dropdown" id="accountDropdown">
+          <div class="info">
+            <div class="name" id="ddName">—</div>
+            <div class="email" id="ddEmail">—</div>
+          </div>
+          <button onclick="showMyPools(); toggleAccountDropdown();">Meus bolões</button>
+          <button onclick="alert('Configurações de conta (demonstração).'); toggleAccountDropdown();">Configurações</button>
+          <button class="danger" onclick="handleLogout()">Sair</button>
+        </div>
+      </div>
       <button class="burger" onclick="toggleMobileMenu()" aria-label="Abrir menu">☰</button>
     </div>
   </div>
@@ -274,10 +383,11 @@
   </div>
 </header>
 
+<div id="mainSite">
 <!-- HERO -->
 <section class="hero">
-  <div class="wrap hero-grid">
-    <div>
+  <div class="wrap">
+    <div style="max-width:640px;">
       <div class="eyebrow">● Bolões ao vivo · Futebol e Fórmula 1</div>
       <h1>Palpite. <span>Acompanhe.</span><br>Dispute em tempo real.</h1>
       <p class="lead">Monte bolões do Brasileirão, Champions League, Libertadores, Copa do Mundo e da Fórmula 1. Pontuação atualizada rodada a rodada, direto no seu grupo de amigos, família ou empresa.</p>
@@ -285,18 +395,6 @@
         <button class="btn btn-primary btn-lg" onclick="openAuth('register')">Criar meu bolão grátis</button>
         <a href="#como-funciona" class="btn btn-ghost btn-lg" style="display:inline-flex;align-items:center;">Ver como funciona</a>
       </div>
-    </div>
-
-    <div class="scoreboard" aria-label="Exemplo de classificação ao vivo">
-      <div class="scoreboard-head">
-        <div>
-          <div style="font-size:13px;color:var(--ink-dim);">Bolão · Brasileirão Série A</div>
-          <div style="font-weight:700;">Rodada 18 — classificação</div>
-        </div>
-        <div class="live"><span class="live-dot"></span> Ao vivo</div>
-      </div>
-      <div id="sbRows"></div>
-      <div class="sb-foot mono">Atualizado há <span id="sbSeconds">3</span>s · 42 participantes</div>
     </div>
   </div>
 </section>
@@ -314,31 +412,31 @@
         <div class="champ-tag">Futebol · Nacional</div>
         <h3>Brasileirão Série A</h3>
         <p>Palpite no placar exato de cada rodada. Pontos extras para acertar o vencedor e o número de gols.</p>
-        <div class="champ-meta"><span>38 rodadas</span><b>12.480 palpiteiros</b></div>
+        <div class="champ-meta"><span>38 rodadas</span></div>
       </div>
       <div class="champ-card">
         <div class="champ-tag">Futebol · Continental</div>
         <h3>Libertadores</h3>
         <p>Da fase de grupos à final: palpite em jogos de ida e volta com bônus de mata-mata.</p>
-        <div class="champ-meta"><span>fase atual: oitavas</span><b>6.120 palpiteiros</b></div>
+        <div class="champ-meta"><span>fase atual: oitavas</span></div>
       </div>
       <div class="champ-card">
         <div class="champ-tag">Futebol · Europeu</div>
         <h3>Champions League</h3>
         <p>Acompanhe os principais clubes da Europa com pontuação progressiva a cada fase eliminatória.</p>
-        <div class="champ-meta"><span>fase atual: oitavas</span><b>9.870 palpiteiros</b></div>
+        <div class="champ-meta"><span>fase atual: oitavas</span></div>
       </div>
       <div class="champ-card">
         <div class="champ-tag">Futebol · Seleções</div>
         <h3>Copa do Mundo</h3>
         <p>O bolão mais tradicional do escritório, agora com grupos privados ilimitados e ranking por empresa.</p>
-        <div class="champ-meta"><span>fase de grupos</span><b>28.310 palpiteiros</b></div>
+        <div class="champ-meta"><span>fase de grupos</span></div>
       </div>
       <div class="champ-card f1-card">
         <div class="champ-tag">Fórmula 1</div>
         <h3>Temporada F1</h3>
         <p>Palpite no pódio de cada corrida: vencedor, 2º e 3º lugar, volta mais rápida e safety car.</p>
-        <div class="champ-meta"><span>próxima etapa: GP</span><b>4.905 palpiteiros</b></div>
+        <div class="champ-meta"><span>próxima etapa: GP</span></div>
       </div>
       <div class="champ-card">
         <div class="champ-tag">Personalizado</div>
@@ -402,42 +500,43 @@
         <div class="plan-desc">Ideal para experimentar ou disputar com um grupo pequeno de amigos.</div>
         <ul class="plan-features">
           <li>1 bolão ativo por vez</li>
-          <li>Até 15 participantes por bolão</li>
+          <li>Até 12 participantes por bolão</li>
           <li>Campeonatos públicos (Brasileirão e F1)</li>
           <li>Classificação em tempo real</li>
           <li>Suporte por e-mail</li>
         </ul>
-        <button class="btn btn-ghost" onclick="openAuth('register')">Começar grátis</button>
+        <button class="btn btn-ghost" onclick="selectPlan('Básico')">Começar grátis</button>
       </div>
 
       <div class="plan featured">
         <div class="plan-name">Prata</div>
-        <div class="plan-price"><span class="val">R$ 14</span><span class="cents">,90</span><span class="per">/mês</span></div>
+        <div class="plan-price"><span class="val">R$ 60</span><span class="cents">,00</span><span class="per">/mês</span></div>
         <div class="plan-desc">Para quem organiza vários bolões ao mesmo tempo, com amigos ou colegas.</div>
         <ul class="plan-features">
           <li>Até 5 bolões ativos simultâneos</li>
-          <li>Até 100 participantes por bolão</li>
+          <li>Até 40 participantes por bolão</li>
           <li>Todos os campeonatos de futebol e F1</li>
           <li>Regras de pontuação personalizadas</li>
           <li>Ranking por grupo e por temporada</li>
           <li>Suporte prioritário</li>
         </ul>
-        <button class="btn btn-primary" onclick="openAuth('register')">Assinar Prata</button>
+        <button class="btn btn-primary" onclick="selectPlan('Prata')">Assinar Prata</button>
       </div>
 
       <div class="plan">
         <div class="plan-name">Ouro</div>
-        <div class="plan-price"><span class="val">R$ 34</span><span class="cents">,90</span><span class="per">/mês</span></div>
+        <div class="plan-price"><span class="val">R$ 125</span><span class="cents">,00</span><span class="per">/mês</span></div>
         <div class="plan-desc">Feito para empresas e comunidades grandes que precisam de mais controle.</div>
         <ul class="plan-features">
-          <li>Bolões e participantes ilimitados</li>
+          <li>Bolões ilimitados</li>
+          <li>Até 60 participantes por bolão</li>
           <li>Marca própria (logo e cores do grupo)</li>
           <li>Painel de administração avançado</li>
           <li>Exportação de dados e relatórios</li>
           <li>Múltiplos administradores por bolão</li>
           <li>Suporte dedicado via WhatsApp</li>
         </ul>
-        <button class="btn btn-ghost" onclick="openAuth('register')">Assinar Ouro</button>
+        <button class="btn btn-ghost" onclick="selectPlan('Ouro')">Assinar Ouro</button>
       </div>
     </div>
     <p class="disclaimer">Os bolões da PlacarBolão são jogos de prognósticos entre participantes de um mesmo grupo, sem intermediação de apostas em dinheiro pela plataforma: os valores cobrados referem-se exclusivamente ao uso das ferramentas (criação de bolões, regras personalizadas e recursos de administração), e eventuais prêmios são definidos e organizados livremente entre os participantes de cada grupo.</p>
@@ -562,6 +661,62 @@
     </div>
   </div>
 </footer>
+</div><!-- /mainSite -->
+
+<!-- PAINEL DO BOLÃO (aparece após criar o bolão) -->
+<section id="bolaoDashboard" style="display:none;">
+  <div class="wrap" style="padding:28px 24px 70px;">
+
+    <button class="btn btn-ghost" style="margin-bottom:18px;font-size:13px;padding:8px 14px;" onclick="closeBolaoDashboard()">← Voltar ao site</button>
+
+    <div style="border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:26px;">
+      <div style="color:var(--amber); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:1px;" id="dbChampTag">CAMPEONATO</div>
+      <h1 style="font-size:clamp(28px,4vw,40px); margin:2px 0 14px;" id="dbBolaoName">Nome do bolão</h1>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button class="db-tab active" data-tab="home" onclick="switchBolaoTab('home')">Home</button>
+        <button class="db-tab" data-tab="classificacao" onclick="switchBolaoTab('classificacao')">Classificação</button>
+        <button class="db-tab" data-tab="apostas" onclick="switchBolaoTab('apostas')">Apostas</button>
+        <button class="db-tab" data-tab="detalhes" onclick="switchBolaoTab('detalhes')">Detalhes</button>
+      </div>
+    </div>
+
+    <!-- HOME -->
+    <div class="db-panel active" id="dbPanelHome">
+      <div style="display:grid; grid-template-columns:1.1fr .9fr; gap:24px;" class="db-grid">
+        <div>
+          <div class="db-card-head"><span class="live-dot" style="background:var(--racing);"></span> Classificação resumida do bolão</div>
+          <div class="db-table" id="dbHomeStandings"></div>
+          <button class="btn btn-ghost" style="margin-top:14px;font-size:13px;" onclick="switchBolaoTab('classificacao')">Ver classificação completa</button>
+        </div>
+        <div>
+          <div class="db-card-head">Próximos jogos</div>
+          <div id="dbHomeFixtures"></div>
+          <button class="btn btn-ghost" style="margin-top:14px;font-size:13px;" onclick="switchBolaoTab('apostas')">Ir para as apostas</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLASSIFICAÇÃO -->
+    <div class="db-panel" id="dbPanelClassificacao">
+      <div class="db-card-head"><span class="live-dot" style="background:var(--racing);"></span> Classificação do bolão — ao vivo</div>
+      <div class="db-table" id="dbFullStandings"></div>
+    </div>
+
+    <!-- APOSTAS -->
+    <div class="db-panel" id="dbPanelApostas">
+      <div class="db-card-head">Envie seus palpites para a próxima rodada</div>
+      <p style="color:var(--ink-dim);font-size:14px;margin:-6px 0 20px;">Partidas de exemplo (demonstração) — em produção, viriam da tabela oficial do campeonato escolhido.</p>
+      <form id="dbApostasForm" onsubmit="handleSaveApostas(event)"></form>
+    </div>
+
+    <!-- DETALHES -->
+    <div class="db-panel" id="dbPanelDetalhes">
+      <div class="db-card-head">Detalhes do bolão</div>
+      <div id="dbDetalhesInfo"></div>
+    </div>
+
+  </div>
+</section>
 
 <!-- MODAL LOGIN/CADASTRO -->
 <div class="modal-overlay" id="authOverlay" onclick="closeAuthOnOverlay(event)">
@@ -597,6 +752,151 @@
   </div>
 </div>
 
+<!-- MODAL NOVO BOLÃO -->
+<div class="modal-overlay" id="bolaoOverlay" onclick="closeNewBolaoOnOverlay(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeNewBolaoModal()" aria-label="Fechar">×</button>
+    <div class="sub" id="bolaoPlanTag" style="color:var(--field-2);font-weight:700;text-transform:uppercase;font-size:12px;letter-spacing:1px;margin-bottom:6px;">Plano Básico</div>
+    <h2>Novo bolão</h2>
+    <form onsubmit="handleCreateBolao(event)">
+      <div class="field">
+        <label for="bolaoName">Dê um nome para seu bolão:</label>
+        <input id="bolaoName" placeholder="Ex.: Bolão do Trabalho" required>
+      </div>
+      <div class="field">
+        <label for="bolaoChamp">Escolha seu campeonato:</label>
+        <select id="bolaoChamp" required>
+          <option value="" disabled selected>Selecione um campeonato</option>
+          <optgroup label="Seleções e Copas">
+            <option>Copa do Mundo 2026</option>
+            <option>Copa América</option>
+            <option>Eliminatórias América do Sul</option>
+            <option>Eurocopa</option>
+          </optgroup>
+          <optgroup label="Competições continentais (clubes)">
+            <option>Libertadores</option>
+            <option>Copa Sulamericana</option>
+            <option>Recopa Sulamericana</option>
+            <option>Champions League</option>
+            <option>Mundial de Clubes</option>
+          </optgroup>
+          <optgroup label="Brasileirão e Copa do Brasil">
+            <option>Brasileirão Série A</option>
+            <option>Brasileirão Série B</option>
+            <option>Brasileirão Série C</option>
+            <option>Copa do Brasil</option>
+          </optgroup>
+          <optgroup label="Estaduais">
+            <option>Paulista</option>
+            <option>Carioca</option>
+            <option>Mineiro</option>
+            <option>Gaúcho</option>
+            <option>Baiano</option>
+            <option>Pernambucano</option>
+            <option>Paranaense</option>
+            <option>Catarinense</option>
+          </optgroup>
+          <optgroup label="Ligas europeias">
+            <option>Premier League</option>
+            <option>Bundesliga</option>
+            <option>Italiano</option>
+            <option>Espanhol</option>
+            <option>Francês</option>
+            <option>Supercopa Rei</option>
+          </optgroup>
+          <optgroup label="Outras modalidades">
+            <option>Fórmula 1</option>
+            <option>NFL</option>
+          </optgroup>
+        </select>
+      </div>
+      <button class="btn btn-primary" type="submit">Criar bolão</button>
+    </form>
+    <div class="fine">Você poderá convidar participantes e configurar as regras de pontuação depois de criar o bolão.</div>
+  </div>
+</div>
+
+<!-- MODAL CHECKOUT (planos pagos) -->
+<div class="modal-overlay" id="checkoutOverlay" onclick="closeCheckoutOnOverlay(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeCheckoutModal()" aria-label="Fechar">×</button>
+    <div class="sub" id="checkoutPlanTag" style="color:var(--amber);font-weight:700;text-transform:uppercase;font-size:12px;letter-spacing:1px;margin-bottom:6px;">Plano Prata</div>
+    <h2>Finalizar assinatura</h2>
+    <div class="sub" id="checkoutPrice" style="margin-bottom:20px;">R$ 60,00/mês</div>
+
+    <div class="modal-tabs">
+      <button id="ckTabCard" class="active" onclick="switchCheckoutTab('card')">Cartão de crédito</button>
+      <button id="ckTabPix" onclick="switchCheckoutTab('pix')">Pix</button>
+    </div>
+
+    <div class="modal-panel active" id="ckPanelCard">
+      <form onsubmit="handleCheckoutCard(event)">
+        <div class="field"><label for="ckName">Nome no cartão</label><input id="ckName" required></div>
+        <div class="field"><label for="ckNumber">Número do cartão</label><input id="ckNumber" inputmode="numeric" placeholder="0000 0000 0000 0000" required></div>
+        <div style="display:flex; gap:12px;">
+          <div class="field" style="flex:1;"><label for="ckExpiry">Validade</label><input id="ckExpiry" placeholder="MM/AA" required></div>
+          <div class="field" style="flex:1;"><label for="ckCvv">CVV</label><input id="ckCvv" inputmode="numeric" placeholder="123" required></div>
+        </div>
+        <button class="btn btn-primary" type="submit">Confirmar pagamento</button>
+      </form>
+    </div>
+
+    <div class="modal-panel" id="ckPanelPix">
+      <div class="pix-qr-box" aria-label="QR Code Pix (ilustrativo)">
+        <svg viewBox="0 0 200 200" width="156" height="156" xmlns="http://www.w3.org/2000/svg">
+          <rect width="200" height="200" fill="#ffffff"/>
+          <rect x="10" y="10" width="40" height="40" fill="#111"/>
+          <rect x="18" y="18" width="24" height="24" fill="#fff"/>
+          <rect x="24" y="24" width="12" height="12" fill="#111"/>
+          <rect x="150" y="10" width="40" height="40" fill="#111"/>
+          <rect x="158" y="18" width="24" height="24" fill="#fff"/>
+          <rect x="164" y="24" width="12" height="12" fill="#111"/>
+          <rect x="10" y="150" width="40" height="40" fill="#111"/>
+          <rect x="18" y="158" width="24" height="24" fill="#fff"/>
+          <rect x="24" y="164" width="12" height="12" fill="#111"/>
+          <rect x="70" y="20" width="10" height="10" fill="#111"/>
+          <rect x="90" y="20" width="10" height="10" fill="#111"/>
+          <rect x="110" y="30" width="10" height="10" fill="#111"/>
+          <rect x="70" y="40" width="10" height="10" fill="#111"/>
+          <rect x="130" y="20" width="10" height="10" fill="#111"/>
+          <rect x="60" y="60" width="10" height="10" fill="#111"/>
+          <rect x="80" y="70" width="10" height="10" fill="#111"/>
+          <rect x="100" y="60" width="10" height="10" fill="#111"/>
+          <rect x="120" y="80" width="10" height="10" fill="#111"/>
+          <rect x="140" y="60" width="10" height="10" fill="#111"/>
+          <rect x="60" y="90" width="10" height="10" fill="#111"/>
+          <rect x="90" y="100" width="10" height="10" fill="#111"/>
+          <rect x="110" y="110" width="10" height="10" fill="#111"/>
+          <rect x="130" y="100" width="10" height="10" fill="#111"/>
+          <rect x="150" y="90" width="10" height="10" fill="#111"/>
+          <rect x="70" y="120" width="10" height="10" fill="#111"/>
+          <rect x="90" y="130" width="10" height="10" fill="#111"/>
+          <rect x="110" y="140" width="10" height="10" fill="#111"/>
+          <rect x="130" y="130" width="10" height="10" fill="#111"/>
+          <rect x="150" y="120" width="10" height="10" fill="#111"/>
+          <rect x="70" y="160" width="10" height="10" fill="#111"/>
+          <rect x="90" y="170" width="10" height="10" fill="#111"/>
+          <rect x="110" y="160" width="10" height="10" fill="#111"/>
+          <rect x="130" y="170" width="10" height="10" fill="#111"/>
+          <rect x="150" y="160" width="10" height="10" fill="#111"/>
+        </svg>
+      </div>
+      <p style="font-size:13px;color:var(--ink-dim);text-align:center;margin:0 0 16px;">Escaneie o QR Code com o app do seu banco</p>
+      <div class="field">
+        <label for="pixKey">Ou use o Pix Copia e Cola</label>
+        <div class="pix-key-row">
+          <input id="pixKey" readonly value="00020126580014BR.GOV.BCB.PIX0136chave-a-definir-em-producao5204000053039865802BR5913PLACARBOLAO LTDA6009SAO PAULO6304AB12">
+          <button type="button" class="btn btn-ghost" onclick="copyPixKey()">Copiar</button>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="handleCheckoutPix()">Já efetuei o pagamento</button>
+      <div class="fine">QR Code e chave Pix ilustrativos (demonstração) — serão substituídos pela chave Pix definitiva da conta bancária real na integração com o backend.</div>
+    </div>
+
+    <div class="fine" id="ckDisclaimer">Pagamento simulado (demonstração) — nenhuma cobrança real é feita. Em produção, esta etapa seria processada por um parceiro de pagamentos (ex.: Stripe ou Mercado Pago), e o bolão só é liberado após a confirmação.</div>
+  </div>
+</div>
+
 <script>
   // Mobile menu
   function toggleMobileMenu(){
@@ -621,9 +921,15 @@
   });
 
   // Auth modal
-  function openAuth(tab){
+  function openAuthModal(tab){
     document.getElementById('authOverlay').classList.add('active');
     switchAuthTab(tab || 'login');
+  }
+  function openAuth(tab){
+    // Uso genérico (menu, rodapé, "criar meu bolão grátis"): nunca deve arrastar
+    // um plano escolhido anteriormente e abandonado a meio caminho.
+    pendingPlan = null;
+    openAuthModal(tab);
   }
   function closeAuth(){
     document.getElementById('authOverlay').classList.remove('active');
@@ -636,21 +942,354 @@
     document.getElementById('tabRegister').classList.toggle('active', tab==='register');
     document.getElementById('panelLogin').classList.toggle('active', tab==='login');
     document.getElementById('panelRegister').classList.toggle('active', tab==='register');
+    clearAuthErrors();
   }
-  // In-memory only demo store (no backend / no browser storage)
+  // In-memory only demo store (no backend, no browser storage — reseta ao atualizar a página)
   const demoUsers = [];
+  let currentUser = null;
+  let pendingPlan = null; // plano escolhido antes de logar/cadastrar, só existe durante esse fluxo específico
+  const PLAN_PRICES = { 'Prata': 'R$ 60,00/mês', 'Ouro': 'R$ 125,00/mês' };
+
+  function updateAuthUI(){
+    const guestBox = document.getElementById('guestBox');
+    const accountBox = document.getElementById('accountBox');
+    if(currentUser){
+      guestBox.classList.add('hide');
+      accountBox.classList.add('active');
+      document.getElementById('accountLabel').textContent = currentUser.name.split(' ')[0];
+      document.getElementById('accountAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
+      document.getElementById('ddName').textContent = currentUser.name;
+      document.getElementById('ddEmail').textContent = currentUser.email + ' · Plano ' + (currentUser.plan || 'Básico');
+    } else {
+      guestBox.classList.remove('hide');
+      accountBox.classList.remove('active');
+      document.getElementById('accountDropdown').classList.remove('open');
+    }
+  }
+
+  // Decide o que acontece depois que um plano é escolhido por alguém já logado:
+  // Básico libera a criação do bolão na hora; Prata/Ouro exigem pagamento simulado antes.
+  function proceedAfterPlanChosen(planName){
+    if(planName === 'Básico'){
+      currentUser.plan = 'Básico';
+      updateAuthUI();
+      openNewBolaoModal(planName);
+    } else {
+      openCheckoutModal(planName);
+    }
+  }
+
+  function selectPlan(planName){
+    if(currentUser){
+      proceedAfterPlanChosen(planName);
+    } else {
+      pendingPlan = planName;
+      openAuthModal('register');
+    }
+  }
+
+  function toggleAccountDropdown(){
+    document.getElementById('accountDropdown').classList.toggle('open');
+  }
+  document.addEventListener('click', (e)=>{
+    const box = document.getElementById('accountBox');
+    if(box && !box.contains(e.target)) document.getElementById('accountDropdown').classList.remove('open');
+  });
+
+  function handleLogout(){
+    currentUser = null;
+    updateAuthUI();
+  }
+
+  function clearAuthErrors(){
+    const el = document.getElementById('loginError');
+    if(el) el.style.display = 'none';
+  }
+
   function handleAuth(e, type){
     e.preventDefault();
     if(type === 'register'){
-      const name = document.getElementById('regName').value;
-      const email = document.getElementById('regEmail').value;
-      demoUsers.push({name, email});
-      alert('Conta criada com sucesso (demonstração). Bem-vindo(a), ' + name + '! Em produção, isso criaria sua conta real no plano Básico.');
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim().toLowerCase();
+      const pass = document.getElementById('regPass').value;
+
+      if(demoUsers.some(u => u.email === email)){
+        alert('Já existe uma conta de teste com este e-mail nesta sessão. Tente entrar em vez de cadastrar novamente.');
+        return;
+      }
+
+      const user = {name, email, pass, plan: 'Básico'};
+      demoUsers.push(user);
+      currentUser = user;
+      updateAuthUI();
+      closeAuth();
+
+      if(pendingPlan){
+        const plan = pendingPlan;
+        pendingPlan = null;
+        proceedAfterPlanChosen(plan);
+      } else {
+        alert(
+          'Conta criada, ' + name + '! Você já está logado(a) no plano Básico.\n\n' +
+          'Sobre o e-mail: este é um protótipo sem servidor, então nenhum e-mail real de confirmação é enviado. ' +
+          'Em uma versão em produção, aqui entraria um serviço de envio de e-mail (ex.: Amazon SES ou SendGrid) integrado a um backend.\n\n' +
+          'Importante: como não há banco de dados nesta demonstração, esta conta some se você atualizar a página.'
+        );
+      }
     } else {
-      const email = document.getElementById('loginEmail').value;
-      alert('Login simulado para ' + email + ' (demonstração). Em produção, isso autenticaria sua conta.');
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const pass = document.getElementById('loginPass').value;
+      const found = demoUsers.find(u => u.email === email && u.pass === pass);
+
+      if(!found){
+        showLoginError(
+          demoUsers.length === 0
+            ? 'Nenhuma conta de teste encontrada nesta sessão. Crie uma conta primeiro na aba "Criar conta".'
+            : 'E-mail ou senha incorretos para as contas criadas nesta sessão.'
+        );
+        return;
+      }
+      currentUser = found;
+      updateAuthUI();
+      closeAuth();
+
+      if(pendingPlan){
+        const plan = pendingPlan;
+        pendingPlan = null;
+        proceedAfterPlanChosen(plan);
+      }
     }
-    closeAuth();
+  }
+
+  // Checkout simulado (planos pagos)
+  let checkoutPlan = null;
+  function openCheckoutModal(planName){
+    checkoutPlan = planName;
+    document.getElementById('checkoutPlanTag').textContent = 'Plano ' + planName;
+    document.getElementById('checkoutPrice').textContent = PLAN_PRICES[planName] || '';
+    switchCheckoutTab('card');
+    document.getElementById('checkoutOverlay').classList.add('active');
+  }
+  function closeCheckoutModal(){
+    document.getElementById('checkoutOverlay').classList.remove('active');
+  }
+  function closeCheckoutOnOverlay(e){
+    if(e.target.id === 'checkoutOverlay') closeCheckoutModal();
+  }
+  function switchCheckoutTab(tab){
+    document.getElementById('ckTabCard').classList.toggle('active', tab==='card');
+    document.getElementById('ckTabPix').classList.toggle('active', tab==='pix');
+    document.getElementById('ckPanelCard').classList.toggle('active', tab==='card');
+    document.getElementById('ckPanelPix').classList.toggle('active', tab==='pix');
+  }
+  function copyPixKey(){
+    const input = document.getElementById('pixKey');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(input.value).then(()=>{
+        alert('Código Pix copiado (demonstração). Em produção, você colaria isso no app do seu banco.');
+      }).catch(()=>{
+        alert('Não foi possível copiar automaticamente. Selecione e copie o código manualmente.');
+      });
+    } else {
+      alert('Código Pix selecionado (demonstração). Copie com Ctrl+C / Cmd+C.');
+    }
+  }
+  function finalizeCheckout(){
+    const plan = checkoutPlan;
+    currentUser.plan = plan;
+    updateAuthUI();
+    closeCheckoutModal();
+    openNewBolaoModal(plan);
+  }
+  function handleCheckoutCard(e){
+    e.preventDefault();
+    e.target.reset();
+    finalizeCheckout();
+  }
+  function handleCheckoutPix(){
+    finalizeCheckout();
+  }
+
+  // Novo Bolão modal
+  function openNewBolaoModal(planName){
+    document.getElementById('bolaoPlanTag').textContent = 'Plano ' + (planName || (currentUser && currentUser.plan) || 'Básico');
+    document.getElementById('bolaoOverlay').classList.add('active');
+  }
+  function closeNewBolaoModal(){
+    document.getElementById('bolaoOverlay').classList.remove('active');
+  }
+  function closeNewBolaoOnOverlay(e){
+    if(e.target.id === 'bolaoOverlay') closeNewBolaoModal();
+  }
+  function handleCreateBolao(e){
+    e.preventDefault();
+    const name = document.getElementById('bolaoName').value.trim();
+    const champ = document.getElementById('bolaoChamp').value;
+    const bolao = {
+      name, champ,
+      plan: currentUser ? currentUser.plan : 'Básico',
+      admin: currentUser ? currentUser.name : 'Você',
+      createdAt: new Date().toLocaleDateString('pt-BR'),
+      inviteCode: Math.random().toString(36).substring(2,8).toUpperCase(),
+      fixtures: buildMockFixtures(),
+      standings: buildMockStandings(currentUser ? currentUser.name : 'Você'),
+      guesses: {}
+    };
+    if(currentUser){
+      currentUser.pools = currentUser.pools || [];
+      currentUser.pools.push(bolao);
+    }
+    closeNewBolaoModal();
+    e.target.reset();
+    openBolaoDashboard(bolao);
+  }
+
+  // --- Painel do bolão (dados simulados / demonstração) ---
+  let currentBolao = null;
+
+  function buildMockFixtures(){
+    return [
+      {home:'Atlético Litoral', away:'Vale Forte EC', date:'sáb, 18/07', time:'16:00'},
+      {home:'União Serrana', away:'Porto Alto FC', date:'sáb, 18/07', time:'18:30'},
+      {home:'Estrela do Vale', away:'Serrano Atlético', date:'dom, 19/07', time:'16:00'},
+      {home:'Real Nortense', away:'Costa Azul EC', date:'dom, 19/07', time:'19:00'},
+    ];
+  }
+
+  function buildMockStandings(youName){
+    const base = [
+      {name:'Carla M.', pts:226},
+      {name:'Grupo do Trabalho', pts:216},
+      {name:'Rafael T.', pts:213},
+      {name:'Fernanda L.', pts:206},
+      {name:'Bruno A.', pts:202},
+      {name: youName, pts:0, isMe:true},
+    ];
+    return base.sort((a,b)=>b.pts-a.pts);
+  }
+
+  function openBolaoDashboard(bolao){
+    currentBolao = bolao;
+    document.getElementById('mainSite').style.display = 'none';
+    document.getElementById('bolaoDashboard').style.display = 'block';
+    window.scrollTo(0,0);
+    document.getElementById('dbChampTag').textContent = bolao.champ;
+    document.getElementById('dbBolaoName').textContent = bolao.name;
+    renderDbHome();
+    renderDbClassificacao();
+    renderDbApostas();
+    renderDbDetalhes();
+    switchBolaoTab('home');
+  }
+  function closeBolaoDashboard(){
+    document.getElementById('bolaoDashboard').style.display = 'none';
+    document.getElementById('mainSite').style.display = 'block';
+    window.scrollTo(0,0);
+  }
+  function switchBolaoTab(tab){
+    document.querySelectorAll('.db-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.getElementById('dbPanelHome').classList.toggle('active', tab==='home');
+    document.getElementById('dbPanelClassificacao').classList.toggle('active', tab==='classificacao');
+    document.getElementById('dbPanelApostas').classList.toggle('active', tab==='apostas');
+    document.getElementById('dbPanelDetalhes').classList.toggle('active', tab==='detalhes');
+  }
+
+  function renderStandingsRows(list, limit){
+    const shown = limit ? list.slice(0, limit) : list;
+    const rows = shown.map((p,i) => `
+      <div class="db-row ${p.isMe ? 'me' : ''}">
+        <div class="pos">${i+1}º</div>
+        <div>${p.name}${p.isMe ? ' (você)' : ''}</div>
+        <div class="pts">${p.pts} pts</div>
+      </div>`).join('');
+    return '<div class="db-row head"><div>#</div><div>Participante</div><div>Pts</div></div>' + rows;
+  }
+
+  function renderDbHome(){
+    document.getElementById('dbHomeStandings').innerHTML = renderStandingsRows(currentBolao.standings, 5);
+    document.getElementById('dbHomeFixtures').innerHTML = currentBolao.fixtures.map(f => `
+      <div class="db-fixture">
+        <div class="teams">${f.home} x ${f.away}</div>
+        <div class="when">${f.date} · ${f.time}</div>
+      </div>`).join('');
+  }
+  function renderDbClassificacao(){
+    document.getElementById('dbFullStandings').innerHTML = renderStandingsRows(currentBolao.standings);
+  }
+  function renderDbApostas(){
+    const form = document.getElementById('dbApostasForm');
+    form.innerHTML = currentBolao.fixtures.map((f,i) => {
+      const g = currentBolao.guesses[i] || ['',''];
+      return `
+      <div class="aposta-row">
+        <div>
+          <div class="teams">${f.home} x ${f.away}</div>
+          <div class="when">${f.date} · ${f.time}</div>
+        </div>
+        <div class="aposta-score">
+          <input type="number" min="0" max="20" value="${g[0]}" data-fixture="${i}" data-side="home" placeholder="0">
+          <span style="color:var(--ink-dim);font-weight:700;">x</span>
+          <input type="number" min="0" max="20" value="${g[1]}" data-fixture="${i}" data-side="away" placeholder="0">
+        </div>
+      </div>`;
+    }).join('') + '<button class="btn btn-primary" type="submit" style="margin-top:8px;">Salvar palpites</button>';
+  }
+  function handleSaveApostas(e){
+    e.preventDefault();
+    e.target.querySelectorAll('input').forEach(inp => {
+      const idx = inp.dataset.fixture;
+      currentBolao.guesses[idx] = currentBolao.guesses[idx] || ['',''];
+      currentBolao.guesses[idx][inp.dataset.side === 'home' ? 0 : 1] = inp.value;
+    });
+    alert('Palpites salvos (demonstração)! Em produção, eles ficariam bloqueados a partir do horário de início de cada jogo.');
+  }
+  function renderDbDetalhes(){
+    const link = 'https://placarbolao.com.br/convite/' + currentBolao.inviteCode;
+    document.getElementById('dbDetalhesInfo').innerHTML = `
+      <div class="db-detail-item"><div class="k">Nome do bolão</div><div class="v">${currentBolao.name}</div></div>
+      <div class="db-detail-item"><div class="k">Campeonato</div><div class="v">${currentBolao.champ}</div></div>
+      <div class="db-detail-item"><div class="k">Plano</div><div class="v">${currentBolao.plan}</div></div>
+      <div class="db-detail-item"><div class="k">Administrador</div><div class="v">${currentBolao.admin}</div></div>
+      <div class="db-detail-item"><div class="k">Criado em</div><div class="v">${currentBolao.createdAt}</div></div>
+      <div class="db-detail-item">
+        <div class="k">Link de convite</div>
+        <div class="v" style="display:flex;gap:8px;align-items:center;">
+          <input readonly value="${link}" style="font-family:'Space Mono',monospace;font-size:12px;background:var(--bg-2);border:1px solid var(--line);border-radius:6px;padding:6px 8px;color:var(--ink);width:220px;">
+          <button class="btn btn-ghost" style="font-size:12px;padding:6px 10px;" onclick="copyInviteLink()">Copiar</button>
+        </div>
+      </div>`;
+  }
+  function copyInviteLink(){
+    const link = 'https://placarbolao.com.br/convite/' + currentBolao.inviteCode;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(link).then(()=> alert('Link de convite copiado (demonstração).'));
+    } else {
+      alert('Link: ' + link);
+    }
+  }
+
+  function showMyPools(){
+    const pools = (currentUser && currentUser.pools) || [];
+    if(pools.length === 0){
+      alert('Meus bolões (demonstração): você ainda não criou nenhum bolão.');
+      return;
+    }
+    const list = pools.map(p => '• ' + p.name + ' — ' + p.champ).join('\n');
+    alert('Meus bolões (demonstração):\n\n' + list);
+  }
+
+  function showLoginError(msg){
+    let el = document.getElementById('loginError');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'loginError';
+      el.style.cssText = 'font-size:13px;color:var(--racing);background:rgba(230,57,70,.1);border:1px solid rgba(230,57,70,.3);padding:10px 12px;border-radius:8px;margin-bottom:14px;';
+      document.getElementById('panelLogin').querySelector('form').prepend(el);
+    }
+    el.textContent = msg;
+    el.style.display = 'block';
   }
 
   function handleContact(e){
@@ -658,38 +1297,6 @@
     document.getElementById('contactMsg').style.display = 'block';
     e.target.reset();
   }
-
-  // Live scoreboard simulation
-  const players = [
-    {name:'Carla M.', pts:214},
-    {name:'Rafael T.', pts:208},
-    {name:'Grupo do Trabalho', pts:201},
-    {name:'Bruno A.', pts:196},
-    {name:'Fernanda L.', pts:189},
-  ];
-  function renderScoreboard(){
-    const sorted = [...players].sort((a,b)=>b.pts-a.pts);
-    const rows = sorted.map((p,i)=>`
-      <div class="sb-row">
-        <div class="sb-pos mono">${i+1}º</div>
-        <div class="sb-name">${p.name}</div>
-        <div class="sb-pts">${p.pts} pts</div>
-      </div>`).join('');
-    document.getElementById('sbRows').innerHTML = rows;
-  }
-  renderScoreboard();
-
-  let sec = 3;
-  setInterval(()=>{
-    sec++;
-    if(sec > 8){
-      sec = 0;
-      const idx = Math.floor(Math.random()*players.length);
-      players[idx].pts += Math.floor(Math.random()*3)+1;
-      renderScoreboard();
-    }
-    document.getElementById('sbSeconds').textContent = sec;
-  }, 1000);
 </script>
 
 </body>
