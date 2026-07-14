@@ -288,6 +288,16 @@
   .db-detail-item .v{ font-weight:600; }
   @media (max-width:820px){ .db-grid{ grid-template-columns:1fr !important; } }
 
+  .db-row-champ{
+    display:grid; grid-template-columns:32px 1fr repeat(7, 46px); gap:6px; align-items:center;
+    padding:10px 16px; border-top:1px solid var(--line); font-size:13px; white-space:nowrap;
+  }
+  .db-row-champ.head{ background:var(--bg-2); color:var(--ink-dim); font-size:11px; text-transform:uppercase; letter-spacing:.5px; font-weight:700; border-top:none; }
+  .db-row-champ .pos{ color:var(--ink-dim); font-family:'Space Mono',monospace; }
+  .db-row-champ .team{ font-weight:600; }
+  .db-row-champ .num{ text-align:center; font-family:'Space Mono',monospace; }
+  .db-row-champ .pts-col{ text-align:center; font-family:'Space Mono',monospace; font-weight:700; color:var(--field-2); }
+
   /* Mobile menu */
   .mobile-menu{
     display:none; flex-direction:column; gap:4px; padding:10px 24px 20px; border-top:1px solid var(--line);
@@ -691,8 +701,17 @@
         <div>
           <div class="db-card-head">Próximos jogos</div>
           <div id="dbHomeFixtures"></div>
+          <p id="dbFixturesSourceNote" style="color:var(--ink-dim); font-size:12px; margin:10px 0 0;"></p>
           <button class="btn btn-ghost" style="margin-top:14px;font-size:13px;" onclick="switchBolaoTab('apostas')">Ir para as apostas</button>
         </div>
+      </div>
+
+      <div style="margin-top:28px;" id="dbChampTableBlock">
+        <div class="db-card-head">Classificação do campeonato</div>
+        <div style="overflow-x:auto; border:1px solid var(--line); border-top:none; border-radius:0 0 10px 10px;">
+          <div id="dbChampTable" style="min-width:620px;"></div>
+        </div>
+        <p style="color:var(--ink-dim); font-size:12.5px; margin-top:10px;">Tabela de exemplo (demonstração) — para virar tempo real, é preciso contratar uma API oficial de dados esportivos e integrá-la a um backend.</p>
       </div>
     </div>
 
@@ -705,7 +724,7 @@
     <!-- APOSTAS -->
     <div class="db-panel" id="dbPanelApostas">
       <div class="db-card-head">Envie seus palpites para a próxima rodada</div>
-      <p style="color:var(--ink-dim);font-size:14px;margin:-6px 0 20px;">Partidas de exemplo (demonstração) — em produção, viriam da tabela oficial do campeonato escolhido.</p>
+      <p id="dbApostasNote" style="color:var(--ink-dim);font-size:14px;margin:-6px 0 20px;">Partidas de exemplo (demonstração) — em produção, viriam da tabela oficial do campeonato escolhido.</p>
       <form id="dbApostasForm" onsubmit="handleSaveApostas(event)"></form>
     </div>
 
@@ -730,9 +749,9 @@
     <div class="modal-panel active" id="panelLogin">
       <h2>Bem-vindo de volta</h2>
       <div class="sub">Entre para ver seus bolões e enviar seus palpites.</div>
-      <form onsubmit="handleAuth(event,'login')">
-        <div class="field"><label for="loginEmail">E-mail</label><input id="loginEmail" type="email" required></div>
-        <div class="field"><label for="loginPass">Senha</label><input id="loginPass" type="password" required></div>
+      <form id="loginForm" autocomplete="off" onsubmit="handleAuth(event,'login')">
+        <div class="field"><label for="loginEmail">E-mail</label><input id="loginEmail" type="email" autocomplete="off" required></div>
+        <div class="field"><label for="loginPass">Senha</label><input id="loginPass" type="password" autocomplete="off" required></div>
         <button class="btn btn-primary" type="submit">Entrar</button>
       </form>
       <div class="fine">Ainda não tem conta? <a href="#" onclick="switchAuthTab('register');return false;" style="color:var(--field-2);font-weight:700;">Cadastre-se grátis</a></div>
@@ -741,10 +760,10 @@
     <div class="modal-panel" id="panelRegister">
       <h2>Criar conta grátis</h2>
       <div class="sub">Comece no plano Básico, sem cartão de crédito.</div>
-      <form onsubmit="handleAuth(event,'register')">
-        <div class="field"><label for="regName">Nome</label><input id="regName" required></div>
-        <div class="field"><label for="regEmail">E-mail</label><input id="regEmail" type="email" required></div>
-        <div class="field"><label for="regPass">Senha</label><input id="regPass" type="password" required minlength="6"></div>
+      <form id="registerForm" autocomplete="off" onsubmit="handleAuth(event,'register')">
+        <div class="field"><label for="regName">Nome</label><input id="regName" autocomplete="off" required></div>
+        <div class="field"><label for="regEmail">E-mail</label><input id="regEmail" type="email" autocomplete="off" required></div>
+        <div class="field"><label for="regPass">Senha</label><input id="regPass" type="password" autocomplete="new-password" required minlength="6"></div>
         <button class="btn btn-primary" type="submit">Criar minha conta</button>
       </form>
       <div class="fine">Ao criar uma conta, você concorda com os <a href="#privacidade" onclick="closeAuth()" style="color:var(--field-2);">Termos e Privacidade</a>.</div>
@@ -922,6 +941,9 @@
 
   // Auth modal
   function openAuthModal(tab){
+    document.getElementById('loginForm').reset();
+    document.getElementById('registerForm').reset();
+    clearAuthErrors();
     document.getElementById('authOverlay').classList.add('active');
     switchAuthTab(tab || 'login');
   }
@@ -998,6 +1020,8 @@
 
   function handleLogout(){
     currentUser = null;
+    document.getElementById('loginForm').reset();
+    document.getElementById('registerForm').reset();
     updateAuthUI();
   }
 
@@ -1127,14 +1151,17 @@
     e.preventDefault();
     const name = document.getElementById('bolaoName').value.trim();
     const champ = document.getElementById('bolaoChamp').value;
+    const isF1 = champ === 'Fórmula 1';
     const bolao = {
-      name, champ,
+      name, champ, isF1,
       plan: currentUser ? currentUser.plan : 'Básico',
       admin: currentUser ? currentUser.name : 'Você',
       createdAt: new Date().toLocaleDateString('pt-BR'),
       inviteCode: Math.random().toString(36).substring(2,8).toUpperCase(),
-      fixtures: buildMockFixtures(),
+      fixtures: isF1 ? null : buildMockFixtures(),   // null = carregando (F1) até a API real responder
+      dataSource: isF1 ? 'loading' : 'demo',
       standings: buildMockStandings(currentUser ? currentUser.name : 'Você'),
+      champTable: isF1 ? null : buildMockChampionshipTable(),
       guesses: {}
     };
     if(currentUser){
@@ -1144,6 +1171,62 @@
     closeNewBolaoModal();
     e.target.reset();
     openBolaoDashboard(bolao);
+    if(isF1){
+      loadF1RealData(bolao);
+    }
+  }
+
+  // Fórmula 1: dados reais e gratuitos do calendário oficial via OpenF1 (sem necessidade de chave de API).
+  // O ano é calculado a partir da data atual do dispositivo — nada fica fixo em "2026", então o site
+  // segue funcionando sozinho em 2027, 2028 etc. Também busca a temporada seguinte quando a atual
+  // está terminando, para nunca ficar sem corridas futuras para mostrar.
+  // Ainda não existe uma fonte gratuita equivalente e confiável para os campeonatos de futebol —
+  // por isso eles continuam usando dados de exemplo até que uma API paga (ex.: API-Football, SportRadar)
+  // seja contratada e integrada a um backend.
+  async function fetchF1Meetings(year){
+    const res = await fetch('https://api.openf1.org/v1/meetings?year=' + year);
+    if(!res.ok) throw new Error('Falha na resposta da API para o ano ' + year);
+    return res.json();
+  }
+  async function loadF1RealData(bolao){
+    try{
+      const now = new Date();
+      const currentYear = now.getFullYear();
+
+      let meetings = await fetchF1Meetings(currentYear);
+      let upcoming = meetings.filter(m => m.date_start && new Date(m.date_start) >= now);
+
+      // Se sobrarem poucas corridas na temporada atual (ex.: dezembro), já traz também
+      // a próxima temporada, assim que a OpenF1 disponibilizar o calendário dela.
+      if(upcoming.length < 6){
+        try{
+          const nextYearMeetings = await fetchF1Meetings(currentYear + 1);
+          upcoming = upcoming.concat(nextYearMeetings.filter(m => m.date_start && new Date(m.date_start) >= now));
+        } catch(innerErr){
+          // Calendário do próximo ano ainda não publicado — segue só com o que já tem.
+        }
+      }
+
+      const result = upcoming
+        .sort((a,b) => new Date(a.date_start) - new Date(b.date_start))
+        .slice(0, 6)
+        .map(m => ({
+          name: m.meeting_official_name || m.meeting_name,
+          circuit: m.circuit_short_name,
+          country: m.country_name,
+          date: new Date(m.date_start).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'})
+        }));
+
+      bolao.fixtures = result;
+      bolao.dataSource = result.length ? 'live' : 'empty';
+    } catch(err){
+      bolao.fixtures = [];
+      bolao.dataSource = 'error';
+    }
+    if(currentBolao === bolao){
+      renderDbHome();
+      renderDbApostas();
+    }
   }
 
   // --- Painel do bolão (dados simulados / demonstração) ---
@@ -1158,16 +1241,26 @@
     ];
   }
 
-  function buildMockStandings(youName){
-    const base = [
-      {name:'Carla M.', pts:226},
-      {name:'Grupo do Trabalho', pts:216},
-      {name:'Rafael T.', pts:213},
-      {name:'Fernanda L.', pts:206},
-      {name:'Bruno A.', pts:202},
-      {name: youName, pts:0, isMe:true},
+  function buildMockChampionshipTable(){
+    const raw = [
+      {team:'Atlético Litoral', j:18, v:12, e:3, d:3, gp:34, gc:16},
+      {team:'Vale Forte EC',    j:18, v:11, e:4, d:3, gp:30, gc:18},
+      {team:'União Serrana',    j:18, v:10, e:5, d:3, gp:28, gc:17},
+      {team:'Porto Alto FC',    j:18, v:9,  e:6, d:3, gp:27, gc:20},
+      {team:'Estrela do Vale',  j:18, v:9,  e:4, d:5, gp:26, gc:21},
+      {team:'Serrano Atlético', j:18, v:8,  e:5, d:5, gp:24, gc:22},
+      {team:'Real Nortense',    j:18, v:7,  e:6, d:5, gp:22, gc:23},
+      {team:'Costa Azul EC',    j:18, v:6,  e:5, d:7, gp:20, gc:25},
     ];
-    return base.sort((a,b)=>b.pts-a.pts);
+    return raw
+      .map(t => ({...t, pts: t.v*3 + t.e, sg: t.gp - t.gc}))
+      .sort((a,b) => b.pts - a.pts);
+  }
+
+  function buildMockStandings(youName){
+    // Um bolão recém-criado só tem o administrador como participante,
+    // até que outras pessoas entrem pelo link de convite.
+    return [{name: youName, pts:0, isMe:true}];
   }
 
   function openBolaoDashboard(bolao){
@@ -1204,22 +1297,105 @@
         <div>${p.name}${p.isMe ? ' (você)' : ''}</div>
         <div class="pts">${p.pts} pts</div>
       </div>`).join('');
-    return '<div class="db-row head"><div>#</div><div>Participante</div><div>Pts</div></div>' + rows;
+    const header = '<div class="db-row head"><div>#</div><div>Participante</div><div>Pts</div></div>';
+    if(list.length <= 1){
+      return header + rows + `
+        <div style="padding:18px 16px; color:var(--ink-dim); font-size:13.5px; border-top:1px solid var(--line);">
+          Ainda não há outros participantes neste bolão. Convide seus amigos pelo link em <b style="color:var(--ink);">Detalhes</b> para a disputa começar!
+        </div>`;
+    }
+    return header + rows;
   }
 
   function renderDbHome(){
     document.getElementById('dbHomeStandings').innerHTML = renderStandingsRows(currentBolao.standings, 5);
-    document.getElementById('dbHomeFixtures').innerHTML = currentBolao.fixtures.map(f => `
-      <div class="db-fixture">
-        <div class="teams">${f.home} x ${f.away}</div>
-        <div class="when">${f.date} · ${f.time}</div>
+
+    const fixturesEl = document.getElementById('dbHomeFixtures');
+    const champBlock = document.getElementById('dbChampTableBlock');
+    const sourceNote = document.getElementById('dbFixturesSourceNote');
+
+    if(currentBolao.isF1){
+      champBlock.style.display = 'none'; // não existe uma classificação de pilotos/equipes integrada ainda
+
+      if(currentBolao.dataSource === 'loading'){
+        fixturesEl.innerHTML = '<div style="padding:16px;color:var(--ink-dim);font-size:13.5px;">Buscando o calendário oficial da Fórmula 1…</div>';
+        sourceNote.textContent = '';
+      } else if(currentBolao.dataSource === 'error'){
+        fixturesEl.innerHTML = '<div style="padding:16px;color:var(--racing);font-size:13.5px;">Não foi possível carregar o calendário agora. Tente novamente mais tarde.</div>';
+        sourceNote.textContent = '';
+      } else if(currentBolao.dataSource === 'empty'){
+        fixturesEl.innerHTML = '<div style="padding:16px;color:var(--ink-dim);font-size:13.5px;">Nenhuma etapa futura encontrada para a temporada.</div>';
+        sourceNote.textContent = '';
+      } else {
+        fixturesEl.innerHTML = currentBolao.fixtures.map(f => `
+          <div class="db-fixture">
+            <div class="teams">${f.name}</div>
+            <div class="when">${f.circuit ? f.circuit + ' · ' : ''}${f.date}</div>
+          </div>`).join('');
+        sourceNote.innerHTML = '✓ Dados reais do calendário oficial da Fórmula 1, via <span class="mono">OpenF1</span> (API pública, sem chave necessária).';
+      }
+    } else {
+      champBlock.style.display = '';
+      fixturesEl.innerHTML = currentBolao.fixtures.map(f => `
+        <div class="db-fixture">
+          <div class="teams">${f.home} x ${f.away}</div>
+          <div class="when">${f.date} · ${f.time}</div>
+        </div>`).join('');
+      sourceNote.textContent = 'Partidas de exemplo (demonstração) — para virar tempo real, é preciso contratar uma API oficial de dados esportivos (ex.: API-Football, SportRadar) e integrá-la a um backend.';
+      document.getElementById('dbChampTable').innerHTML = renderChampTableRows(currentBolao.champTable);
+    }
+  }
+  function renderChampTableRows(table){
+    const header = `<div class="db-row-champ head">
+      <div>#</div><div>Time</div><div class="num">Pts</div><div class="num">J</div><div class="num">V</div>
+      <div class="num">E</div><div class="num">D</div><div class="num">GP/GC</div><div class="num">SG</div>
+    </div>`;
+    const rows = table.map((t,i) => `
+      <div class="db-row-champ">
+        <div class="pos">${i+1}º</div>
+        <div class="team">${t.team}</div>
+        <div class="pts-col">${t.pts}</div>
+        <div class="num">${t.j}</div>
+        <div class="num">${t.v}</div>
+        <div class="num">${t.e}</div>
+        <div class="num">${t.d}</div>
+        <div class="num">${t.gp}-${t.gc}</div>
+        <div class="num">${t.sg > 0 ? '+' : ''}${t.sg}</div>
       </div>`).join('');
+    return header + rows;
   }
   function renderDbClassificacao(){
     document.getElementById('dbFullStandings').innerHTML = renderStandingsRows(currentBolao.standings);
   }
   function renderDbApostas(){
     const form = document.getElementById('dbApostasForm');
+    const note = document.getElementById('dbApostasNote');
+
+    if(currentBolao.isF1){
+      note.textContent = 'Calendário real da Fórmula 1 (via OpenF1) — indique aqui seu palpite de pódio para cada etapa.';
+      if(!currentBolao.fixtures || currentBolao.fixtures.length === 0){
+        form.innerHTML = '<div style="color:var(--ink-dim);font-size:13.5px;">Aguardando o calendário da temporada carregar…</div>';
+        return;
+      }
+      form.innerHTML = currentBolao.fixtures.map((f,i) => {
+        const g = currentBolao.guesses[i] || ['','',''];
+        return `
+        <div class="aposta-row" style="flex-direction:column;align-items:stretch;">
+          <div style="margin-bottom:10px;">
+            <div class="teams">${f.name}</div>
+            <div class="when">${f.circuit ? f.circuit + ' · ' : ''}${f.date}</div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <div class="field" style="margin:0;flex:1;min-width:140px;"><label style="font-size:12px;">1º lugar</label><input type="text" data-fixture="${i}" data-side="p1" value="${g[0]||''}" placeholder="Piloto"></div>
+            <div class="field" style="margin:0;flex:1;min-width:140px;"><label style="font-size:12px;">2º lugar</label><input type="text" data-fixture="${i}" data-side="p2" value="${g[1]||''}" placeholder="Piloto"></div>
+            <div class="field" style="margin:0;flex:1;min-width:140px;"><label style="font-size:12px;">3º lugar</label><input type="text" data-fixture="${i}" data-side="p3" value="${g[2]||''}" placeholder="Piloto"></div>
+          </div>
+        </div>`;
+      }).join('') + '<button class="btn btn-primary" type="submit" style="margin-top:8px;">Salvar palpites</button>';
+      return;
+    }
+
+    note.textContent = 'Partidas de exemplo (demonstração) — em produção, viriam da tabela oficial do campeonato escolhido.';
     form.innerHTML = currentBolao.fixtures.map((f,i) => {
       const g = currentBolao.guesses[i] || ['',''];
       return `
@@ -1238,12 +1414,13 @@
   }
   function handleSaveApostas(e){
     e.preventDefault();
+    const sideIndex = { home:0, away:1, p1:0, p2:1, p3:2 };
     e.target.querySelectorAll('input').forEach(inp => {
       const idx = inp.dataset.fixture;
-      currentBolao.guesses[idx] = currentBolao.guesses[idx] || ['',''];
-      currentBolao.guesses[idx][inp.dataset.side === 'home' ? 0 : 1] = inp.value;
+      currentBolao.guesses[idx] = currentBolao.guesses[idx] || ['','',''];
+      currentBolao.guesses[idx][sideIndex[inp.dataset.side]] = inp.value;
     });
-    alert('Palpites salvos (demonstração)! Em produção, eles ficariam bloqueados a partir do horário de início de cada jogo.');
+    alert('Palpites salvos (demonstração)! Em produção, eles ficariam bloqueados a partir do horário de início de cada prova/jogo.');
   }
   function renderDbDetalhes(){
     const link = 'https://placarbolao.com.br/convite/' + currentBolao.inviteCode;
